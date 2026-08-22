@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Planificador 2026 — Hábitos</title>
+  <style>
+
+:root {
+  --rosa-principal: #F8C8DC;
+  --rosa-oscuro: #E8A4C8;
+  --rosa-claro: #FFF0F5;
+  --rosa-medio: #FADADD;
+  --texto: #5A3A44;
+  --texto-claro: #8B6B75;
+  --blanco: #FFFFFF;
+  --crema: #FDF6F0;
+  --sombra: rgba(90, 58, 68, 0.08);
+  --borde: #F0D0D8;
+  --exito: #A8D5BA;
+  --alerta: #F5C6AA;
+  --acento: #E8A4C8;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  background: var(--crema);
+  color: var(--texto);
+  min-height: 100vh;
+  line-height: 1.6;
+  transition: background 0.4s ease, color 0.4s ease;
+}
+.nav-bar {
+  background: var(--blanco);
+  border-bottom: 1px solid var(--borde);
+  padding: 0 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 20px var(--sombra);
+}
+.nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+.nav-logo {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--rosa-oscuro);
+  letter-spacing: 1px;
+}
+.nav-links {
+  display: flex;
+  gap: 0.3rem;
+  list-style: none;
+  flex-wrap: wrap;
+}
+.nav-links a {
+  text-decoration: none;
+  color: var(--texto-claro);
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+}
+.nav-links a:hover, .nav-links a.active {
+  background: var(--rosa-claro);
+  color: var(--rosa-oscuro);
+}
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+.card {
+  background: var(--blanco);
+  border-radius: 20px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 24px var(--sombra);
+  border: 1px solid var(--borde);
+  margin-bottom: 1.5rem;
+  transition: transform 0.2s ease;
+}
+.card:hover { transform: translateY(-2px); }
+.card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--rosa-oscuro);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.btn {
+  background: var(--rosa-principal);
+  color: var(--texto);
+  border: none;
+  padding: 0.6rem 1.4rem;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+.btn:hover {
+  background: var(--rosa-oscuro);
+  color: var(--blanco);
+  transform: translateY(-1px);
+}
+.btn-outline {
+  background: transparent;
+  border: 2px solid var(--rosa-principal);
+  color: var(--rosa-oscuro);
+}
+.btn-outline:hover {
+  background: var(--rosa-principal);
+  color: var(--texto);
+}
+.btn-small {
+  padding: 0.3rem 0.8rem;
+  font-size: 0.8rem;
+  border-radius: 8px;
+}
+input, textarea, select {
+  font-family: inherit;
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  padding: 0.6rem 0.9rem;
+  font-size: 0.9rem;
+  color: var(--texto);
+  background: var(--crema);
+  outline: none;
+  transition: border-color 0.3s ease;
+  width: 100%;
+}
+input:focus, textarea:focus, select:focus {
+  border-color: var(--rosa-oscuro);
+  background: var(--blanco);
+}
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+@media (max-width: 768px) {
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  .nav-links { display: none; }
+  .container { padding: 1rem; }
+}
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--crema); }
+::-webkit-scrollbar-thumb { background: var(--rosa-principal); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--rosa-oscuro); }
+
+/* Utilidades comunes */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(90,58,68,0.3);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  backdrop-filter: blur(4px);
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--blanco);
+  border-radius: 24px;
+  padding: 2rem;
+  width: 90%;
+  max-width: 420px;
+  box-shadow: 0 20px 60px rgba(90,58,68,0.2);
+  border: 1px solid var(--borde);
+}
+.modal h3 {
+  color: var(--rosa-oscuro);
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+.modal textarea, .modal input {
+  width: 100%;
+  min-height: 100px;
+  resize: vertical;
+  margin-bottom: 1rem;
+}
+.modal-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+    .hab-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .hab-header h1 {
+      font-size: 2rem;
+      font-weight: 300;
+      color: var(--texto);
+    }
+    .hab-header h1 span { font-weight: 700; color: var(--rosa-oscuro); }
+
+    .hab-controls {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr auto;
+      gap: 0.8rem;
+      align-items: end;
+      margin-bottom: 1.5rem;
+    }
+    @media (max-width: 768px) {
+      .hab-controls { grid-template-columns: 1fr; }
+    }
+
+    .hab-lista {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .hab-item {
+      background: var(--blanco);
+      border-radius: 16px;
+      padding: 1rem 1.5rem;
+      border: 1px solid var(--borde);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      transition: all 0.2s ease;
+    }
+    .hab-item:hover {
+      box-shadow: 0 4px 16px var(--sombra);
+    }
+    .hab-check {
+      width: 32px;
+      height: 32px;
+      border: 2px solid var(--borde);
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+    .hab-check.checked {
+      background: var(--exito);
+      border-color: var(--exito);
+      color: var(--blanco);
+    }
+    .hab-info { flex: 1; }
+    .hab-nombre {
+      font-weight: 600;
+      color: var(--texto);
+      font-size: 1rem;
+    }
+    .hab-meta {
+      font-size: 0.8rem;
+      color: var(--texto-claro);
+    }
+    .hab-streak {
+      background: var(--rosa-claro);
+      color: var(--rosa-oscuro);
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .hab-streak.hot {
+      background: #FFEBEE;
+      color: #C62828;
+    }
+    .hab-delete {
+      background: none;
+      border: none;
+      color: var(--alerta);
+      cursor: pointer;
+      font-size: 1.2rem;
+      padding: 0.3rem;
+      opacity: 0.5;
+      transition: opacity 0.2s;
+    }
+    .hab-delete:hover { opacity: 1; }
+
+    .hab-num-input {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .hab-num-input input {
+      width: 80px;
+      text-align: center;
+      padding: 0.4rem;
+    }
+    .hab-num-input span {
+      font-size: 0.8rem;
+      color: var(--texto-claro);
+    }
+    .hab-bar {
+      flex: 1;
+      height: 8px;
+      background: var(--borde);
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 0 0.5rem;
+    }
+    .hab-bar-fill {
+      height: 100%;
+      background: var(--exito);
+      border-radius: 4px;
+      transition: width 0.4s ease;
+    }
+    .hab-bar-fill.partial {
+      background: var(--alerta);
+    }
+
+    .hab-grid-dias {
+      display: grid;
+      grid-template-columns: repeat(14, 1fr);
+      gap: 0.25rem;
+      margin-top: 0.8rem;
+    }
+    .hab-dia {
+      aspect-ratio: 1;
+      border-radius: 4px;
+      background: var(--crema);
+      border: 1px solid var(--borde);
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.6rem;
+      color: var(--texto-claro);
+    }
+    .hab-dia:hover { border-color: var(--rosa-oscuro); }
+    .hab-dia.done {
+      background: var(--exito);
+      border-color: var(--exito);
+      color: var(--blanco);
+    }
+    .hab-dia.partial {
+      background: var(--alerta);
+      border-color: var(--alerta);
+      color: var(--blanco);
+    }
+
+    .resumen-hab {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .resumen-box {
+      background: var(--blanco);
+      border-radius: 16px;
+      padding: 1.2rem;
+      text-align: center;
+      border: 1px solid var(--borde);
+    }
+    .resumen-box .num {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--rosa-oscuro);
+    }
+    .resumen-box .label {
+      font-size: 0.7rem;
+      color: var(--texto-claro);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav-bar">
+    <div class="nav-inner">
+      <div class="nav-logo">&#10047; Planificador 2026</div>
+      <ul class="nav-links">
+        <li><a href="index.html">Inicio</a></li>
+        <li><a href="calendario.html">Calendario</a></li>
+        <li><a href="habitos.html" class="active">Hábitos</a></li>
+        <li><a href="tiempo.html">Mi Día</a></li>
+        <li><a href="finanzas.html">Finanzas</a></li>
+        <li><a href="notas.html">Notas</a></li>
+        <li><a href="personalizar.html">&#127912;</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="hab-header">
+      <h1>Seguimiento de <span>Hábitos</span></h1>
+      <p style="color:var(--texto-claro);font-size:0.95rem">Booleanos o con metas numéricas. Lleva tu racha.</p>
+    </div>
+
+    <div class="resumen-hab">
+      <div class="resumen-box">
+        <div class="num" id="totalHabits">0</div>
+        <div class="label">Hábitos</div>
+      </div>
+      <div class="resumen-box">
+        <div class="num" id="completedToday">0</div>
+        <div class="label">Completados hoy</div>
+      </div>
+      <div class="resumen-box">
+        <div class="num" id="bestStreak">0</div>
+        <div class="label">Mejor racha</div>
+      </div>
+      <div class="resumen-box">
+        <div class="num" id="weeklyRate">0%</div>
+        <div class="label">Esta semana</div>
+      </div>
+      <div class="resumen-box">
+        <div class="num" id="totalMetas">0</div>
+        <div class="label">Metas numéricas</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">&#10133; Nuevo hábito</div>
+      <div class="hab-controls">
+        <input type="text" id="habNombre" placeholder="Nombre (ej: Flexiones, Leer, Meditar...)">
+        <select id="habTipo">
+          <option value="booleano">Check simple</option>
+          <option value="numerico">Con meta numérica</option>
+        </select>
+        <input type="number" id="habMeta" placeholder="Meta (ej: 100)" min="1" style="display:none">
+        <input type="text" id="habUnidad" placeholder="Unidad (ej: flexiones, págs)" style="display:none">
+        <select id="habFrecuencia">
+          <option value="diario">Diario</option>
+          <option value="semanal">Semanal</option>
+          <option value="mensual">Mensual</option>
+        </select>
+        <button class="btn" onclick="agregarHabito()">Agregar</button>
+      </div>
+    </div>
+
+    <div class="hab-lista" id="habLista"></div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'habitos_2026_v2';
+    const CHECKS_KEY = 'habitos_checks_2026_v2';
+
+    // Mostrar/ocultar campos según tipo
+    document.getElementById('habTipo').addEventListener('change', function() {
+      const esNum = this.value === 'numerico';
+      document.getElementById('habMeta').style.display = esNum ? 'block' : 'none';
+      document.getElementById('habUnidad').style.display = esNum ? 'block' : 'none';
+    });
+
+    function getHabitos() {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    }
+    function setHabitos(h) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(h));
+    }
+    function getChecks() {
+      return JSON.parse(localStorage.getItem(CHECKS_KEY) || '{}');
+    }
+    function setChecks(c) {
+      localStorage.setItem(CHECKS_KEY, JSON.stringify(c));
+    }
+
+    function hoyStr() {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    }
+
+    function agregarHabito() {
+      const nombre = document.getElementById('habNombre').value.trim();
+      const tipo = document.getElementById('habTipo').value;
+      const freq = document.getElementById('habFrecuencia').value;
+      const meta = parseInt(document.getElementById('habMeta').value) || 0;
+      const unidad = document.getElementById('habUnidad').value.trim();
+      if (!nombre) return;
+      if (tipo === 'numerico' && meta <= 0) {
+        alert('Define una meta numérica mayor a 0');
+        return;
+      }
+
+      const habitos = getHabitos();
+      habitos.push({
+        id: Date.now(),
+        nombre,
+        tipo,
+        frecuencia: freq,
+        meta: tipo === 'numerico' ? meta : null,
+        unidad: tipo === 'numerico' ? unidad : null,
+        creado: hoyStr()
+      });
+      setHabitos(habitos);
+      document.getElementById('habNombre').value = '';
+      document.getElementById('habMeta').value = '';
+      document.getElementById('habUnidad').value = '';
+      renderHabitos();
+    }
+
+    function toggleHabito(id) {
+      const checks = getChecks();
+      const hoy = hoyStr();
+      if (!checks[hoy]) checks[hoy] = [];
+      const idx = checks[hoy].findIndex(c => c.id === id);
+      if (idx >= 0) checks[hoy].splice(idx, 1);
+      else checks[hoy].push({ id, valor: 1, fecha: hoy });
+      setChecks(checks);
+      renderHabitos();
+    }
+
+    function registrarValor(id) {
+      const input = document.getElementById('val-' + id);
+      const valor = parseFloat(input.value);
+      if (isNaN(valor) || valor < 0) return;
+
+      const checks = getChecks();
+      const hoy = hoyStr();
+      if (!checks[hoy]) checks[hoy] = [];
+      const idx = checks[hoy].findIndex(c => c.id === id);
+      if (idx >= 0) checks[hoy][idx].valor = valor;
+      else checks[hoy].push({ id, valor, fecha: hoy });
+      setChecks(checks);
+      renderHabitos();
+    }
+
+    function eliminarHabito(id) {
+      if (!confirm('&#191;Eliminar este hábito?')) return;
+      let habitos = getHabitos();
+      habitos = habitos.filter(h => h.id !== id);
+      setHabitos(habitos);
+      const checks = getChecks();
+      for (let d in checks) {
+        checks[d] = checks[d].filter(x => x.id !== id);
+      }
+      setChecks(checks);
+      renderHabitos();
+    }
+
+    function calcularRacha(id, meta) {
+      const checks = getChecks();
+      let racha = 0;
+      const hoy = new Date();
+      for (let i = 0; i < 365; i++) {
+        const d = new Date(hoy);
+        d.setDate(d.getDate() - i);
+        const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        const reg = checks[key] ? checks[key].find(c => c.id === id) : null;
+        const cumple = meta ? (reg && reg.valor >= meta) : (reg !== undefined);
+        if (cumple) racha++;
+        else if (i > 0) break;
+      }
+      return racha;
+    }
+
+    function renderHabitos() {
+      const habitos = getHabitos();
+      const checks = getChecks();
+      const hoy = hoyStr();
+      const cont = document.getElementById('habLista');
+      cont.innerHTML = '';
+
+      let completadosHoy = 0;
+      let mejorRacha = 0;
+      let metasNum = 0;
+
+      habitos.forEach(h => {
+        const racha = calcularRacha(h.id, h.meta);
+        if (racha > mejorRacha) mejorRacha = racha;
+        if (h.tipo === 'numerico') metasNum++;
+
+        const regHoy = checks[hoy] ? checks[hoy].find(c => c.id === h.id) : null;
+        const hechoHoy = h.tipo === 'booleano'
+          ? (regHoy !== undefined)
+          : (regHoy && regHoy.valor >= h.meta);
+        if (hechoHoy) completadosHoy++;
+
+        const item = document.createElement('div');
+        item.className = 'hab-item';
+
+        let inner = '';
+        if (h.tipo === 'booleano') {
+          inner = `
+            <div class="hab-check ${hechoHoy ? 'checked' : ''}" onclick="toggleHabito(${h.id})">
+              ${hechoHoy ? '&#10003;' : ''}
+            </div>
+            <div class="hab-info">
+              <div class="hab-nombre">${h.nombre}</div>
+              <div class="hab-meta">${h.frecuencia.charAt(0).toUpperCase() + h.frecuencia.slice(1)} · Desde ${h.creado}</div>
+              <div class="hab-grid-dias">${renderMiniCal(h.id, h.meta)}</div>
+            </div>
+          `;
+        } else {
+          const valActual = regHoy ? regHoy.valor : 0;
+          const pct = Math.min(100, Math.round((valActual / h.meta) * 100));
+          inner = `
+            <div class="hab-check ${hechoHoy ? 'checked' : ''}" style="cursor:default">
+              ${hechoHoy ? '&#10003;' : ''}
+            </div>
+            <div class="hab-info">
+              <div class="hab-nombre">${h.nombre}</div>
+              <div class="hab-meta">Meta: ${h.meta} ${h.unidad || 'unidades'} · ${h.frecuencia}</div>
+              <div style="display:flex;align-items:center;margin-top:0.4rem;gap:0.5rem">
+                <div class="hab-bar"><div class="hab-bar-fill ${pct < 100 ? 'partial' : ''}" style="width:${pct}%"></div></div>
+                <span style="font-size:0.8rem;font-weight:600;color:var(--rosa-oscuro);min-width:45px;text-align:right">${pct}%</span>
+              </div>
+              <div class="hab-grid-dias">${renderMiniCal(h.id, h.meta)}</div>
+            </div>
+            <div class="hab-num-input">
+              <input type="number" id="val-$${h.id}" value="${valActual || ''}" placeholder="0" min="0" onchange="registrarValor(${h.id})">
+              <span>${h.unidad || ''}</span>
+            </div>
+          `;
+        }
+
+        inner += `<div class="hab-streak ${racha >= 7 ? 'hot' : ''}">&#128293; ${racha}</div>`;
+        inner += `<button class="hab-delete" onclick="eliminarHabito(${h.id})">&#128465;</button>`;
+
+        item.innerHTML = inner;
+        cont.appendChild(item);
+      });
+
+      document.getElementById('totalHabits').textContent = habitos.length;
+      document.getElementById('completedToday').textContent = completadosHoy;
+      document.getElementById('bestStreak').textContent = mejorRacha;
+      document.getElementById('totalMetas').textContent = metasNum;
+
+      let semanaHechos = 0, semanaTotal = 0;
+      const hoyD = new Date();
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(hoyD);
+        d.setDate(d.getDate() - i);
+        const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        habitos.forEach(h => {
+          semanaTotal++;
+          const reg = checks[key] ? checks[key].find(c => c.id === h.id) : null;
+          const cumple = h.meta ? (reg && reg.valor >= h.meta) : (reg !== undefined);
+          if (cumple) semanaHechos++;
+        });
+      }
+      const rate = semanaTotal > 0 ? Math.round((semanaHechos / semanaTotal) * 100) : 0;
+      document.getElementById('weeklyRate').textContent = rate + '%';
+    }
+
+    function renderMiniCal(habitoId, meta) {
+      const checks = getChecks();
+      let html = '';
+      const hoy = new Date();
+      for (let i = 13; i >= 0; i--) {
+        const d = new Date(hoy);
+        d.setDate(d.getDate() - i);
+        const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        const reg = checks[key] ? checks[key].find(c => c.id === habitoId) : null;
+        let cls = '';
+        if (reg) {
+          cls = meta ? (reg.valor >= meta ? 'done' : 'partial') : 'done';
+        }
+        html += `<div class="hab-dia ${cls}" title="${key}">${d.getDate()}</div>`;
+      }
+      return html;
+    }
+
+    // Cargar tema
+    const temaGuardado = localStorage.getItem('tema_planificador');
+    if (temaGuardado) {
+      const t = JSON.parse(temaGuardado);
+      const r = document.documentElement;
+      r.style.setProperty('--rosa-principal', t.principal);
+      r.style.setProperty('--rosa-oscuro', t.oscuro);
+      r.style.setProperty('--rosa-claro', t.claro);
+      r.style.setProperty('--rosa-medio', t.medio);
+      r.style.setProperty('--texto', t.texto);
+      r.style.setProperty('--texto-claro', t.textoClaro);
+      r.style.setProperty('--crema', t.crema);
+      r.style.setProperty('--borde', t.borde);
+      r.style.setProperty('--sombra', t.sombra);
+      r.style.setProperty('--acento', t.acento);
+    }
+
+    renderHabitos();
+  </script>
+
+</body>
+</html>
