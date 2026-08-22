@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Planificador 2026 — Personalizar</title>
+  <style>
+
+:root {
+  --rosa-principal: #F8C8DC;
+  --rosa-oscuro: #E8A4C8;
+  --rosa-claro: #FFF0F5;
+  --rosa-medio: #FADADD;
+  --texto: #5A3A44;
+  --texto-claro: #8B6B75;
+  --blanco: #FFFFFF;
+  --crema: #FDF6F0;
+  --sombra: rgba(90, 58, 68, 0.08);
+  --borde: #F0D0D8;
+  --exito: #A8D5BA;
+  --alerta: #F5C6AA;
+  --acento: #E8A4C8;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  background: var(--crema);
+  color: var(--texto);
+  min-height: 100vh;
+  line-height: 1.6;
+  transition: background 0.4s ease, color 0.4s ease;
+}
+.nav-bar {
+  background: var(--blanco);
+  border-bottom: 1px solid var(--borde);
+  padding: 0 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 20px var(--sombra);
+}
+.nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+.nav-logo {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--rosa-oscuro);
+  letter-spacing: 1px;
+}
+.nav-links {
+  display: flex;
+  gap: 0.3rem;
+  list-style: none;
+  flex-wrap: wrap;
+}
+.nav-links a {
+  text-decoration: none;
+  color: var(--texto-claro);
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+}
+.nav-links a:hover, .nav-links a.active {
+  background: var(--rosa-claro);
+  color: var(--rosa-oscuro);
+}
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+.card {
+  background: var(--blanco);
+  border-radius: 20px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 24px var(--sombra);
+  border: 1px solid var(--borde);
+  margin-bottom: 1.5rem;
+  transition: transform 0.2s ease;
+}
+.card:hover { transform: translateY(-2px); }
+.card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--rosa-oscuro);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.btn {
+  background: var(--rosa-principal);
+  color: var(--texto);
+  border: none;
+  padding: 0.6rem 1.4rem;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+.btn:hover {
+  background: var(--rosa-oscuro);
+  color: var(--blanco);
+  transform: translateY(-1px);
+}
+.btn-outline {
+  background: transparent;
+  border: 2px solid var(--rosa-principal);
+  color: var(--rosa-oscuro);
+}
+.btn-outline:hover {
+  background: var(--rosa-principal);
+  color: var(--texto);
+}
+.btn-small {
+  padding: 0.3rem 0.8rem;
+  font-size: 0.8rem;
+  border-radius: 8px;
+}
+input, textarea, select {
+  font-family: inherit;
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  padding: 0.6rem 0.9rem;
+  font-size: 0.9rem;
+  color: var(--texto);
+  background: var(--crema);
+  outline: none;
+  transition: border-color 0.3s ease;
+  width: 100%;
+}
+input:focus, textarea:focus, select:focus {
+  border-color: var(--rosa-oscuro);
+  background: var(--blanco);
+}
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+@media (max-width: 768px) {
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  .nav-links { display: none; }
+  .container { padding: 1rem; }
+}
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--crema); }
+::-webkit-scrollbar-thumb { background: var(--rosa-principal); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--rosa-oscuro); }
+
+/* Utilidades comunes */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(90,58,68,0.3);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  backdrop-filter: blur(4px);
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--blanco);
+  border-radius: 24px;
+  padding: 2rem;
+  width: 90%;
+  max-width: 420px;
+  box-shadow: 0 20px 60px rgba(90,58,68,0.2);
+  border: 1px solid var(--borde);
+}
+.modal h3 {
+  color: var(--rosa-oscuro);
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+.modal textarea, .modal input {
+  width: 100%;
+  min-height: 100px;
+  resize: vertical;
+  margin-bottom: 1rem;
+}
+.modal-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+    .pers-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .pers-header h1 {
+      font-size: 2rem;
+      font-weight: 300;
+      color: var(--texto);
+    }
+    .pers-header h1 span { font-weight: 700; color: var(--rosa-oscuro); }
+
+    .temas-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .tema-card {
+      background: var(--blanco);
+      border-radius: 20px;
+      padding: 1.5rem;
+      border: 2px solid var(--borde);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+    }
+    .tema-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 30px var(--sombra);
+    }
+    .tema-card.selected {
+      border-color: var(--rosa-oscuro);
+      box-shadow: 0 0 0 3px var(--rosa-claro);
+    }
+    .tema-preview {
+      width: 100%;
+      height: 80px;
+      border-radius: 12px;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    .tema-dot {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.5);
+    }
+    .tema-nombre {
+      font-weight: 600;
+      color: var(--texto);
+      margin-bottom: 0.3rem;
+    }
+    .tema-desc {
+      font-size: 0.8rem;
+      color: var(--texto-claro);
+    }
+
+    .custom-section {
+      background: var(--blanco);
+      border-radius: 20px;
+      padding: 1.5rem;
+      border: 1px solid var(--borde);
+      margin-bottom: 1.5rem;
+    }
+    .custom-section h3 {
+      color: var(--rosa-oscuro);
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+    }
+    .color-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 0.8rem;
+      align-items: center;
+    }
+    .color-row label {
+      font-size: 0.9rem;
+      color: var(--texto);
+    }
+    .color-row input[type="color"] {
+      width: 60px;
+      height: 36px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      padding: 2px;
+    }
+
+    .preview-box {
+      background: var(--crema);
+      border-radius: 16px;
+      padding: 2rem;
+      text-align: center;
+      border: 1px solid var(--borde);
+      margin-top: 1rem;
+    }
+    .preview-box h4 {
+      color: var(--rosa-oscuro);
+      margin-bottom: 0.5rem;
+    }
+    .preview-btn {
+      background: var(--rosa-principal);
+      color: var(--texto);
+      padding: 0.5rem 1.2rem;
+      border-radius: 10px;
+      border: none;
+      font-weight: 600;
+      margin-top: 0.5rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav-bar">
+    <div class="nav-inner">
+      <div class="nav-logo">&#10047; Planificador 2026</div>
+      <ul class="nav-links">
+        <li><a href="index.html">Inicio</a></li>
+        <li><a href="calendario.html">Calendario</a></li>
+        <li><a href="habitos.html">Hábitos</a></li>
+        <li><a href="tiempo.html">Mi Día</a></li>
+        <li><a href="finanzas.html">Finanzas</a></li>
+        <li><a href="notas.html">Notas</a></li>
+        <li><a href="personalizar.html" class="active">&#127912;</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="pers-header">
+      <h1>Personaliza tu <span>Estilo</span></h1>
+      <p style="color:var(--texto-claro);font-size:0.95rem">Elige un tema predefinido o crea el tuyo propio</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">&#127912; Temas predefinidos</div>
+      <div class="temas-grid" id="temasGrid"></div>
+    </div>
+
+    <div class="custom-section">
+      <h3>&#9881; Colores personalizados</h3>
+      <div class="color-row">
+        <label>Color principal</label>
+        <input type="color" id="customPrincipal" value="#F8C8DC">
+      </div>
+      <div class="color-row">
+        <label>Color oscuro</label>
+        <input type="color" id="customOscuro" value="#E8A4C8">
+      </div>
+      <div class="color-row">
+        <label>Color claro</label>
+        <input type="color" id="customClaro" value="#FFF0F5">
+      </div>
+      <div class="color-row">
+        <label>Color medio</label>
+        <input type="color" id="customMedio" value="#FADADD">
+      </div>
+      <div class="color-row">
+        <label>Texto principal</label>
+        <input type="color" id="customTexto" value="#5A3A44">
+      </div>
+      <div class="color-row">
+        <label>Texto secundario</label>
+        <input type="color" id="customTextoClaro" value="#8B6B75">
+      </div>
+      <div class="color-row">
+        <label>Fondo (crema)</label>
+        <input type="color" id="customCrema" value="#FDF6F0">
+      </div>
+      <div class="color-row">
+        <label>Bordes</label>
+        <input type="color" id="customBorde" value="#F0D0D8">
+      </div>
+      <div style="display:flex;gap:0.5rem;margin-top:1rem">
+        <button class="btn" onclick="aplicarCustom()">Aplicar personalizado</button>
+        <button class="btn btn-outline" onclick="resetTema()">Restaurar original</button>
+      </div>
+
+      <div class="preview-box">
+        <h4>Vista previa</h4>
+        <p style="color:var(--texto-claro);font-size:0.85rem">Así se verá tu planificador</p>
+        <button class="preview-btn">Botón de ejemplo</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const temas = [
+      {
+        id: 'rosa',
+        nombre: 'Rosa Minimalista',
+        desc: 'El clásico tono rosa suave',
+        principal: '#F8C8DC', oscuro: '#E8A4C8', claro: '#FFF0F5', medio: '#FADADD',
+        texto: '#5A3A44', textoClaro: '#8B6B75', crema: '#FDF6F0', borde: '#F0D0D8',
+        sombra: 'rgba(90,58,68,0.08)', acento: '#E8A4C8',
+        preview: ['#F8C8DC', '#E8A4C8', '#FFF0F5']
+      },
+      {
+        id: 'azul',
+        nombre: 'Azul Serenidad',
+        desc: 'Tonos azul pastel calmados',
+        principal: '#B8D4E3', oscuro: '#7BA7C0', claro: '#E8F4F8', medio: '#D0E6F0',
+        texto: '#3A4A5A', textoClaro: '#6A7A8A', crema: '#F0F6FA', borde: '#C8D8E4',
+        sombra: 'rgba(58,74,90,0.08)', acento: '#7BA7C0',
+        preview: ['#B8D4E3', '#7BA7C0', '#E8F4F8']
+      },
+      {
+        id: 'sage',
+        nombre: 'Sage Natural',
+        desc: 'Verde salvia relajante',
+        principal: '#B5C9A8', oscuro: '#8BA87A', claro: '#E8F0E3', medio: '#D0DDC5',
+        texto: '#3A4A35', textoClaro: '#6A7A65', crema: '#F5F8F2', borde: '#C8D4BE',
+        sombra: 'rgba(58,74,53,0.08)', acento: '#8BA87A',
+        preview: ['#B5C9A8', '#8BA87A', '#E8F0E3']
+      },
+      {
+        id: 'lavanda',
+        nombre: 'Lavanda Suave',
+        desc: 'Púrpura pastel elegante',
+        principal: '#D4C4E0', oscuro: '#A890C0', claro: '#F0E8F8', medio: '#E4D8F0',
+        texto: '#4A3A5A', textoClaro: '#7A6A8A', crema: '#F8F5FA', borde: '#D8D0E4',
+        sombra: 'rgba(74,58,90,0.08)', acento: '#A890C0',
+        preview: ['#D4C4E0', '#A890C0', '#F0E8F8']
+      },
+      {
+        id: 'melocoton',
+        nombre: 'Melocotón Cálido',
+        desc: 'Naranja suave y acogedor',
+        principal: '#F5C6A5', oscuro: '#D49A75', claro: '#FDF0E8', medio: '#F8E0D0',
+        texto: '#5A3A2A', textoClaro: '#8A6A5A', crema: '#FDF8F4', borde: '#F0D8C8',
+        sombra: 'rgba(90,58,42,0.08)', acento: '#D49A75',
+        preview: ['#F5C6A5', '#D49A75', '#FDF0E8']
+      },
+      {
+        id: 'gris',
+        nombre: 'Gris Elegante',
+        desc: 'Neutral y sofisticado',
+        principal: '#C8C8C8', oscuro: '#8A8A8A', claro: '#F0F0F0', medio: '#D8D8D8',
+        texto: '#3A3A3A', textoClaro: '#6A6A6A', crema: '#FAFAFA', borde: '#D0D0D0',
+        sombra: 'rgba(58,58,58,0.08)', acento: '#8A8A8A',
+        preview: ['#C8C8C8', '#8A8A8A', '#F0F0F0']
+      }
+    ];
+
+    function aplicarTema(tema) {
+      const r = document.documentElement;
+      r.style.setProperty('--rosa-principal', tema.principal);
+      r.style.setProperty('--rosa-oscuro', tema.oscuro);
+      r.style.setProperty('--rosa-claro', tema.claro);
+      r.style.setProperty('--rosa-medio', tema.medio);
+      r.style.setProperty('--texto', tema.texto);
+      r.style.setProperty('--texto-claro', tema.textoClaro);
+      r.style.setProperty('--crema', tema.crema);
+      r.style.setProperty('--borde', tema.borde);
+      r.style.setProperty('--sombra', tema.sombra);
+      r.style.setProperty('--acento', tema.acento);
+      localStorage.setItem('tema_planificador', JSON.stringify(tema));
+      renderTemas();
+    }
+
+    function aplicarCustom() {
+      const tema = {
+        principal: document.getElementById('customPrincipal').value,
+        oscuro: document.getElementById('customOscuro').value,
+        claro: document.getElementById('customClaro').value,
+        medio: document.getElementById('customMedio').value,
+        texto: document.getElementById('customTexto').value,
+        textoClaro: document.getElementById('customTextoClaro').value,
+        crema: document.getElementById('customCrema').value,
+        borde: document.getElementById('customBorde').value,
+        sombra: hexToRgba(document.getElementById('customTexto').value, 0.08),
+        acento: document.getElementById('customOscuro').value
+      };
+      aplicarTema(tema);
+    }
+
+    function resetTema() {
+      localStorage.removeItem('tema_planificador');
+      location.reload();
+    }
+
+    function hexToRgba(hex, alpha) {
+      const r = parseInt(hex.slice(1,3), 16);
+      const g = parseInt(hex.slice(3,5), 16);
+      const b = parseInt(hex.slice(5,7), 16);
+      return `rgba(${r},${g},${b},${alpha})`;
+    }
+
+    function renderTemas() {
+      const guardado = localStorage.getItem('tema_planificador');
+      const actual = guardado ? JSON.parse(guardado) : temas[0];
+      const grid = document.getElementById('temasGrid');
+      grid.innerHTML = '';
+
+      temas.forEach(t => {
+        const esActivo = actual.id === t.id;
+        const card = document.createElement('div');
+        card.className = 'tema-card' + (esActivo ? ' selected' : '');
+        card.innerHTML = `
+          <div class="tema-preview" style="background: linear-gradient(135deg, ${t.preview[2]} 0%, ${t.preview[0]} 100%)">
+            ${t.preview.map(c => `<div class="tema-dot" style="background:${c}"></div>`).join('')}
+          </div>
+          <div class="tema-nombre">${t.nombre}</div>
+          <div class="tema-desc">${t.desc}</div>
+        `;
+        card.onclick = () => aplicarTema(t);
+        grid.appendChild(card);
+      });
+    }
+
+    // Cargar tema al inicio
+    const temaGuardado = localStorage.getItem('tema_planificador');
+    if (temaGuardado) {
+      const t = JSON.parse(temaGuardado);
+      const r = document.documentElement;
+      r.style.setProperty('--rosa-principal', t.principal);
+      r.style.setProperty('--rosa-oscuro', t.oscuro);
+      r.style.setProperty('--rosa-claro', t.claro);
+      r.style.setProperty('--rosa-medio', t.medio);
+      r.style.setProperty('--texto', t.texto);
+      r.style.setProperty('--texto-claro', t.textoClaro);
+      r.style.setProperty('--crema', t.crema);
+      r.style.setProperty('--borde', t.borde);
+      r.style.setProperty('--sombra', t.sombra);
+      r.style.setProperty('--acento', t.acento);
+    }
+
+    renderTemas();
+  </script>
+
+</body>
+</html>
