@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Planificador 2026 — Mi Día</title>
+  <style>
+
+:root {
+  --rosa-principal: #F8C8DC;
+  --rosa-oscuro: #E8A4C8;
+  --rosa-claro: #FFF0F5;
+  --rosa-medio: #FADADD;
+  --texto: #5A3A44;
+  --texto-claro: #8B6B75;
+  --blanco: #FFFFFF;
+  --crema: #FDF6F0;
+  --sombra: rgba(90, 58, 68, 0.08);
+  --borde: #F0D0D8;
+  --exito: #A8D5BA;
+  --alerta: #F5C6AA;
+  --acento: #E8A4C8;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  background: var(--crema);
+  color: var(--texto);
+  min-height: 100vh;
+  line-height: 1.6;
+  transition: background 0.4s ease, color 0.4s ease;
+}
+.nav-bar {
+  background: var(--blanco);
+  border-bottom: 1px solid var(--borde);
+  padding: 0 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 20px var(--sombra);
+}
+.nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+.nav-logo {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--rosa-oscuro);
+  letter-spacing: 1px;
+}
+.nav-links {
+  display: flex;
+  gap: 0.3rem;
+  list-style: none;
+  flex-wrap: wrap;
+}
+.nav-links a {
+  text-decoration: none;
+  color: var(--texto-claro);
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+}
+.nav-links a:hover, .nav-links a.active {
+  background: var(--rosa-claro);
+  color: var(--rosa-oscuro);
+}
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+.card {
+  background: var(--blanco);
+  border-radius: 20px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 24px var(--sombra);
+  border: 1px solid var(--borde);
+  margin-bottom: 1.5rem;
+  transition: transform 0.2s ease;
+}
+.card:hover { transform: translateY(-2px); }
+.card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--rosa-oscuro);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.btn {
+  background: var(--rosa-principal);
+  color: var(--texto);
+  border: none;
+  padding: 0.6rem 1.4rem;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+.btn:hover {
+  background: var(--rosa-oscuro);
+  color: var(--blanco);
+  transform: translateY(-1px);
+}
+.btn-outline {
+  background: transparent;
+  border: 2px solid var(--rosa-principal);
+  color: var(--rosa-oscuro);
+}
+.btn-outline:hover {
+  background: var(--rosa-principal);
+  color: var(--texto);
+}
+.btn-small {
+  padding: 0.3rem 0.8rem;
+  font-size: 0.8rem;
+  border-radius: 8px;
+}
+input, textarea, select {
+  font-family: inherit;
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  padding: 0.6rem 0.9rem;
+  font-size: 0.9rem;
+  color: var(--texto);
+  background: var(--crema);
+  outline: none;
+  transition: border-color 0.3s ease;
+  width: 100%;
+}
+input:focus, textarea:focus, select:focus {
+  border-color: var(--rosa-oscuro);
+  background: var(--blanco);
+}
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+@media (max-width: 768px) {
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  .nav-links { display: none; }
+  .container { padding: 1rem; }
+}
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--crema); }
+::-webkit-scrollbar-thumb { background: var(--rosa-principal); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--rosa-oscuro); }
+
+/* Utilidades comunes */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(90,58,68,0.3);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  backdrop-filter: blur(4px);
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--blanco);
+  border-radius: 24px;
+  padding: 2rem;
+  width: 90%;
+  max-width: 420px;
+  box-shadow: 0 20px 60px rgba(90,58,68,0.2);
+  border: 1px solid var(--borde);
+}
+.modal h3 {
+  color: var(--rosa-oscuro);
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+.modal textarea, .modal input {
+  width: 100%;
+  min-height: 100px;
+  resize: vertical;
+  margin-bottom: 1rem;
+}
+.modal-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+    .time-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .time-header h1 {
+      font-size: 2rem;
+      font-weight: 300;
+      color: var(--texto);
+    }
+    .time-header h1 span { font-weight: 700; color: var(--rosa-oscuro); }
+
+    .time-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+    @media (max-width: 900px) {
+      .time-layout { grid-template-columns: 1fr; }
+    }
+
+    .chart-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1rem;
+    }
+    .chart-svg {
+      width: 320px;
+      height: 320px;
+    }
+    .chart-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      justify-content: center;
+      margin-top: 1rem;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.8rem;
+      color: var(--texto-claro);
+    }
+    .legend-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .time-form {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr auto;
+      gap: 0.8rem;
+      align-items: end;
+      margin-bottom: 1rem;
+    }
+    @media (max-width: 768px) {
+      .time-form { grid-template-columns: 1fr; }
+    }
+
+    .actividad-lista {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .act-item {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      padding: 0.7rem 1rem;
+      background: var(--crema);
+      border-radius: 12px;
+      border: 1px solid var(--borde);
+    }
+    .act-color {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .act-info { flex: 1; }
+    .act-nombre {
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+    .act-horas {
+      font-size: 0.8rem;
+      color: var(--texto-claro);
+    }
+    .act-pct {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--rosa-oscuro);
+      min-width: 50px;
+      text-align: right;
+    }
+    .act-delete {
+      background: none;
+      border: none;
+      color: var(--alerta);
+      cursor: pointer;
+      font-size: 1.1rem;
+      opacity: 0.5;
+      transition: opacity 0.2s;
+    }
+    .act-delete:hover { opacity: 1; }
+
+    .time-summary {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .time-sum-box {
+      background: var(--blanco);
+      border-radius: 16px;
+      padding: 1rem;
+      text-align: center;
+      border: 1px solid var(--borde);
+    }
+    .time-sum-box .num {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--rosa-oscuro);
+    }
+    .time-sum-box .label {
+      font-size: 0.7rem;
+      color: var(--texto-claro);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .color-picker-inline {
+      display: flex;
+      gap: 0.4rem;
+    }
+    .color-opt-inline {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.2s;
+    }
+    .color-opt-inline.selected { border-color: var(--texto); transform: scale(1.15); }
+  </style>
+</head>
+<body>
+
+  <nav class="nav-bar">
+    <div class="nav-inner">
+      <div class="nav-logo">&#10047; Planificador 2026</div>
+      <ul class="nav-links">
+        <li><a href="index.html">Inicio</a></li>
+        <li><a href="calendario.html">Calendario</a></li>
+        <li><a href="habitos.html">Hábitos</a></li>
+        <li><a href="tiempo.html" class="active">Mi Día</a></li>
+        <li><a href="finanzas.html">Finanzas</a></li>
+        <li><a href="notas.html">Notas</a></li>
+        <li><a href="personalizar.html">&#127912;</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="time-header">
+      <h1>Uso de tu <span>Día</span></h1>
+      <p style="color:var(--texto-claro);font-size:0.95rem">Visualiza cómo distribuyes tus 24 horas</p>
+    </div>
+
+    <div class="time-summary">
+      <div class="time-sum-box">
+        <div class="num" id="sumUsadas">0h</div>
+        <div class="label">Usadas</div>
+      </div>
+      <div class="time-sum-box">
+        <div class="num" id="sumLibres">24h</div>
+        <div class="label">Libres</div>
+      </div>
+      <div class="time-sum-box">
+        <div class="num" id="sumActividades">0</div>
+        <div class="label">Actividades</div>
+      </div>
+    </div>
+
+    <div class="time-layout">
+      <div class="card chart-container">
+        <div class="card-title">&#127774; Diagrama de 24 horas</div>
+        <svg class="chart-svg" viewBox="0 0 300 300" id="dayChart"></svg>
+        <div class="chart-legend" id="chartLegend"></div>
+      </div>
+
+      <div>
+        <div class="card">
+          <div class="card-title">&#10133; Nueva actividad</div>
+          <div class="time-form">
+            <input type="text" id="actNombre" placeholder="Actividad (ej: Jugar, Estudiar...)">
+            <input type="number" id="actHoras" placeholder="Horas" step="0.25" min="0.25" max="24">
+            <div class="color-picker-inline" id="colorPicker"></div>
+            <button class="btn" onclick="agregarActividad()">Agregar</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">&#128203; Actividades de hoy</div>
+          <div class="actividad-lista" id="actLista"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const TIEMPO_KEY = 'tiempo_dia';
+    const colores = ['#F8C8DC', '#A8D5BA', '#F5C6AA', '#B8A9C9', '#FADADD', '#C8E6F5', '#E1C8F8', '#F8E8C8'];
+    let colorSel = colores[0];
+
+    function getActividades() {
+      return JSON.parse(localStorage.getItem(TIEMPO_KEY) || '[]');
+    }
+    function setActividades(a) {
+      localStorage.setItem(TIEMPO_KEY, JSON.stringify(a));
+    }
+
+    function renderColorPicker() {
+      const cont = document.getElementById('colorPicker');
+      cont.innerHTML = '';
+      colores.forEach(c => {
+        const div = document.createElement('div');
+        div.className = 'color-opt-inline' + (c === colorSel ? ' selected' : '');
+        div.style.background = c;
+        div.onclick = () => { colorSel = c; renderColorPicker(); };
+        cont.appendChild(div);
+      });
+    }
+
+    function agregarActividad() {
+      const nombre = document.getElementById('actNombre').value.trim();
+      const horas = parseFloat(document.getElementById('actHoras').value);
+      if (!nombre || isNaN(horas) || horas <= 0) return;
+
+      const actividades = getActividades();
+      const usado = actividades.reduce((s,a) => s + a.horas, 0);
+      if (usado + horas > 24) {
+        alert('Solo quedan ' + (24 - usado).toFixed(2) + ' horas libres.');
+        return;
+      }
+
+      actividades.push({ id: Date.now(), nombre, horas, color: colorSel });
+      setActividades(actividades);
+      document.getElementById('actNombre').value = '';
+      document.getElementById('actHoras').value = '';
+      renderTodo();
+    }
+
+    function eliminarActividad(id) {
+      let actividades = getActividades();
+      actividades = actividades.filter(a => a.id !== id);
+      setActividades(actividades);
+      renderTodo();
+    }
+
+    function renderTodo() {
+      const actividades = getActividades();
+      const usado = actividades.reduce((s,a) => s + a.horas, 0);
+      const libre = Math.max(0, 24 - usado);
+
+      document.getElementById('sumUsadas').textContent = usado.toFixed(1) + 'h';
+      document.getElementById('sumLibres').textContent = libre.toFixed(1) + 'h';
+      document.getElementById('sumActividades').textContent = actividades.length;
+
+      // SVG Donut Chart
+      const svg = document.getElementById('dayChart');
+      let html = '';
+      const cx = 150, cy = 150, r = 110, ri = 70;
+      let ang = -90;
+
+      const datos = [...actividades, {nombre: 'Libre', horas: libre, color: 'var(--borde)'}];
+
+      datos.forEach(d => {
+        const grados = (d.horas / 24) * 360;
+        if (grados > 0.5) {
+          const rad = Math.PI / 180;
+          const x1o = cx + r * Math.cos(ang * rad);
+          const y1o = cy + r * Math.sin(ang * rad);
+          const x2o = cx + r * Math.cos((ang + grados) * rad);
+          const y2o = cy + r * Math.sin((ang + grados) * rad);
+          const x1i = cx + ri * Math.cos(ang * rad);
+          const y1i = cy + ri * Math.sin(ang * rad);
+          const x2i = cx + ri * Math.cos((ang + grados) * rad);
+          const y2i = cy + ri * Math.sin((ang + grados) * rad);
+          const large = grados > 180 ? 1 : 0;
+
+          html += `<path d="M${x1o},${y1o} A${r},${r} 0 ${large},1 ${x2o},${y2o} L${x2i},${y2i} A${ri},${ri} 0 ${large},0 ${x1i},${y1i} Z" fill="${d.color}" stroke="var(--blanco)" stroke-width="2"/>`;
+          ang += grados;
+        }
+      });
+
+      html += `<text x="150" y="142" text-anchor="middle" font-size="22" fill="var(--texto)" font-weight="700">${usado.toFixed(1)}h</text>`;
+      html += `<text x="150" y="162" text-anchor="middle" font-size="12" fill="var(--texto-claro)">de 24h usadas</text>`;
+      svg.innerHTML = html;
+
+      // Leyenda
+      const leg = document.getElementById('chartLegend');
+      leg.innerHTML = '';
+      actividades.forEach(a => {
+        const pct = Math.round((a.horas / 24) * 100);
+        leg.innerHTML += `<div class="legend-item"><div class="legend-dot" style="background:${a.color}"></div>${a.nombre} (${pct}%)</div>`;
+      });
+      if (libre > 0) {
+        const pct = Math.round((libre / 24) * 100);
+        leg.innerHTML += `<div class="legend-item"><div class="legend-dot" style="background:var(--borde)"></div>Libre (${pct}%)</div>`;
+      }
+
+      // Lista
+      const lista = document.getElementById('actLista');
+      lista.innerHTML = '';
+      if (actividades.length === 0) {
+        lista.innerHTML = '<p style="color:var(--texto-claro);text-align:center;padding:1rem">No hay actividades registradas hoy.</p>';
+      }
+      actividades.forEach(a => {
+        const pct = Math.round((a.horas / 24) * 100);
+        const item = document.createElement('div');
+        item.className = 'act-item';
+        item.innerHTML = `
+          <div class="act-color" style="background:${a.color}"></div>
+          <div class="act-info">
+            <div class="act-nombre">${a.nombre}</div>
+            <div class="act-horas">${a.horas} horas</div>
+          </div>
+          <span class="act-pct">${pct}%</span>
+          <button class="act-delete" onclick="eliminarActividad(${a.id})">&#128465;</button>
+        `;
+        lista.appendChild(item);
+      });
+    }
+
+    renderColorPicker();
+    renderTodo();
+  </script>
+
+</body>
+</html>
