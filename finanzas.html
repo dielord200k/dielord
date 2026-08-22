@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Planificador 2026 — Finanzas</title>
+  <style>
+
+:root {
+  --rosa-principal: #F8C8DC;
+  --rosa-oscuro: #E8A4C8;
+  --rosa-claro: #FFF0F5;
+  --rosa-medio: #FADADD;
+  --texto: #5A3A44;
+  --texto-claro: #8B6B75;
+  --blanco: #FFFFFF;
+  --crema: #FDF6F0;
+  --sombra: rgba(90, 58, 68, 0.08);
+  --borde: #F0D0D8;
+  --exito: #A8D5BA;
+  --alerta: #F5C6AA;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  background: var(--crema);
+  color: var(--texto);
+  min-height: 100vh;
+  line-height: 1.6;
+}
+.nav-bar {
+  background: var(--blanco);
+  border-bottom: 1px solid var(--borde);
+  padding: 0 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 20px var(--sombra);
+}
+.nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+.nav-logo {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--rosa-oscuro);
+  letter-spacing: 1px;
+}
+.nav-links {
+  display: flex;
+  gap: 0.5rem;
+  list-style: none;
+}
+.nav-links a {
+  text-decoration: none;
+  color: var(--texto-claro);
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+}
+.nav-links a:hover, .nav-links a.active {
+  background: var(--rosa-claro);
+  color: var(--rosa-oscuro);
+}
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+.card {
+  background: var(--blanco);
+  border-radius: 20px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 24px var(--sombra);
+  border: 1px solid var(--borde);
+  margin-bottom: 1.5rem;
+  transition: transform 0.2s ease;
+}
+.card:hover { transform: translateY(-2px); }
+.card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--rosa-oscuro);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.btn {
+  background: var(--rosa-principal);
+  color: var(--texto);
+  border: none;
+  padding: 0.6rem 1.4rem;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+.btn:hover {
+  background: var(--rosa-oscuro);
+  color: var(--blanco);
+  transform: translateY(-1px);
+}
+.btn-outline {
+  background: transparent;
+  border: 2px solid var(--rosa-principal);
+  color: var(--rosa-oscuro);
+}
+.btn-outline:hover {
+  background: var(--rosa-principal);
+  color: var(--texto);
+}
+.btn-small {
+  padding: 0.3rem 0.8rem;
+  font-size: 0.8rem;
+  border-radius: 8px;
+}
+input, textarea, select {
+  font-family: inherit;
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  padding: 0.6rem 0.9rem;
+  font-size: 0.9rem;
+  color: var(--texto);
+  background: var(--crema);
+  outline: none;
+  transition: border-color 0.3s ease;
+  width: 100%;
+}
+input:focus, textarea:focus, select:focus {
+  border-color: var(--rosa-oscuro);
+  background: var(--blanco);
+}
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+@media (max-width: 768px) {
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  .nav-links { display: none; }
+  .container { padding: 1rem; }
+}
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--crema); }
+::-webkit-scrollbar-thumb { background: var(--rosa-principal); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--rosa-oscuro); }
+
+    .fin-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .fin-header h1 {
+      font-size: 2rem;
+      font-weight: 300;
+      color: var(--texto);
+    }
+    .fin-header h1 span { font-weight: 700; color: var(--rosa-oscuro); }
+
+    .fin-resumen {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .fin-box {
+      background: var(--blanco);
+      border-radius: 20px;
+      padding: 1.5rem;
+      text-align: center;
+      border: 1px solid var(--borde);
+      box-shadow: 0 4px 20px var(--sombra);
+    }
+    .fin-box .label {
+      font-size: 0.75rem;
+      color: var(--texto-claro);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 0.5rem;
+    }
+    .fin-box .amount {
+      font-size: 1.6rem;
+      font-weight: 700;
+    }
+    .fin-box.ingreso .amount { color: var(--exito); }
+    .fin-box.gasto .amount { color: var(--alerta); }
+    .fin-box.balance .amount { color: var(--rosa-oscuro); }
+    .fin-box.ahorro .amount { color: #B8A9C9; }
+
+    .fin-form {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr auto;
+      gap: 0.8rem;
+      align-items: end;
+      margin-bottom: 1rem;
+    }
+    @media (max-width: 768px) {
+      .fin-form { grid-template-columns: 1fr; }
+    }
+
+    .fin-tabla {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+    .fin-tabla th {
+      text-align: left;
+      padding: 0.8rem;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--texto-claro);
+      border-bottom: 2px solid var(--borde);
+    }
+    .fin-tabla td {
+      padding: 0.8rem;
+      border-bottom: 1px solid var(--borde);
+      font-size: 0.9rem;
+    }
+    .fin-tabla tr:hover td {
+      background: var(--rosa-claro);
+    }
+    .tag {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .tag-ingreso { background: #E8F5E9; color: #388E3C; }
+    .tag-gasto { background: #FFEBEE; color: #C62828; }
+    .tag-ahorro { background: #EDE7F6; color: #5E35B1; }
+
+    .fin-chart {
+      height: 200px;
+      display: flex;
+      align-items: flex-end;
+      gap: 0.5rem;
+      padding: 1rem 0;
+      border-bottom: 2px solid var(--borde);
+    }
+    .fin-bar {
+      flex: 1;
+      background: var(--rosa-principal);
+      border-radius: 8px 8px 0 0;
+      min-height: 4px;
+      transition: height 0.5s ease;
+      position: relative;
+    }
+    .fin-bar:hover {
+      background: var(--rosa-oscuro);
+    }
+    .fin-bar-label {
+      position: absolute;
+      bottom: -22px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.65rem;
+      color: var(--texto-claro);
+      white-space: nowrap;
+    }
+    .fin-bar-val {
+      position: absolute;
+      top: -18px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--texto);
+    }
+
+    .fin-filtros {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    .fin-filtro {
+      background: var(--blanco);
+      border: 1px solid var(--borde);
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-family: inherit;
+      color: var(--texto-claro);
+    }
+    .fin-filtro.active {
+      background: var(--rosa-principal);
+      color: var(--texto);
+      border-color: var(--rosa-oscuro);
+    }
+  </style>
+</head>
+<body>
+
+    <nav class="nav-bar">
+    <div class="nav-inner">
+      <div class="nav-logo">&#10047; Planificador 2026</div>
+      <ul class="nav-links">
+        <li><a href="index.html">Inicio</a></li>
+        <li><a href="calendario.html">Calendario</a></li>
+        <li><a href="habitos.html">Hábitos</a></li>
+        <li><a href="tiempo.html">Mi Día</a></li>
+        <li><a href="finanzas.html" class="active">Finanzas</a></li>
+        <li><a href="notas.html">Notas</a></li>
+        <li><a href="personalizar.html">&#127912;</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="fin-header">
+      <h1>Control de <span>Finanzas</span></h1>
+    </div>
+
+    <div class="fin-resumen">
+      <div class="fin-box ingreso">
+        <div class="label">Ingresos</div>
+        <div class="amount" id="totalIngresos">$0.00</div>
+      </div>
+      <div class="fin-box gasto">
+        <div class="label">Gastos</div>
+        <div class="amount" id="totalGastos">$0.00</div>
+      </div>
+      <div class="fin-box balance">
+        <div class="label">Balance</div>
+        <div class="amount" id="totalBalance">$0.00</div>
+      </div>
+      <div class="fin-box ahorro">
+        <div class="label">Ahorro</div>
+        <div class="amount" id="totalAhorro">$0.00</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">&#128202; Resumen mensual</div>
+      <div class="fin-chart" id="finChart"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">&#10133; Nueva transacción</div>
+      <div class="fin-form">
+        <input type="text" id="finDesc" placeholder="Descripción (ej: Sueldo, Supermercado...)">
+        <input type="number" id="finMonto" placeholder="Monto" step="0.01">
+        <select id="finTipo">
+          <option value="ingreso">Ingreso</option>
+          <option value="gasto">Gasto</option>
+          <option value="ahorro">Ahorro</option>
+        </select>
+        <input type="date" id="finFecha">
+        <button class="btn" onclick="agregarTrans()">Agregar</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">&#128203; Historial</div>
+      <div class="fin-filtros">
+        <button class="fin-filtro active" onclick="filtrar('todos')">Todos</button>
+        <button class="fin-filtro" onclick="filtrar('ingreso')">Ingresos</button>
+        <button class="fin-filtro" onclick="filtrar('gasto')">Gastos</button>
+        <button class="fin-filtro" onclick="filtrar('ahorro')">Ahorros</button>
+      </div>
+      <table class="fin-tabla">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Descripción</th>
+            <th>Tipo</th>
+            <th style="text-align:right">Monto</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="finTabla"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const FIN_KEY = 'finanzas_2026';
+    let filtroActual = 'todos';
+
+    function getTrans() {
+      return JSON.parse(localStorage.getItem(FIN_KEY) || '[]');
+    }
+    function setTrans(t) {
+      localStorage.setItem(FIN_KEY, JSON.stringify(t));
+    }
+
+    function formatMoney(n) {
+      return '$' + parseFloat(n).toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    }
+
+    function agregarTrans() {
+      const desc = document.getElementById('finDesc').value.trim();
+      const monto = parseFloat(document.getElementById('finMonto').value);
+      const tipo = document.getElementById('finTipo').value;
+      const fecha = document.getElementById('finFecha').value || new Date().toISOString().split('T')[0];
+      if (!desc || isNaN(monto) || monto <= 0) return;
+
+      const trans = getTrans();
+      trans.push({ id: Date.now(), desc, monto, tipo, fecha });
+      setTrans(trans);
+
+      document.getElementById('finDesc').value = '';
+      document.getElementById('finMonto').value = '';
+      document.getElementById('finFecha').value = '';
+      renderFinanzas();
+    }
+
+    function eliminarTrans(id) {
+      if (!confirm('&#191;Eliminar esta transacci&#243;n?')) return;
+      let trans = getTrans();
+      trans = trans.filter(t => t.id !== id);
+      setTrans(trans);
+      renderFinanzas();
+    }
+
+    function filtrar(tipo) {
+      filtroActual = tipo;
+      document.querySelectorAll('.fin-filtro').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+      renderFinanzas();
+    }
+
+    function renderFinanzas() {
+      const trans = getTrans().sort((a,b) => new Date(b.fecha) - new Date(a.fecha));
+      const filtrados = filtroActual === 'todos' ? trans : trans.filter(t => t.tipo === filtroActual);
+
+      let ingresos = 0, gastos = 0, ahorros = 0;
+      trans.forEach(t => {
+        if (t.tipo === 'ingreso') ingresos += t.monto;
+        else if (t.tipo === 'gasto') gastos += t.monto;
+        else if (t.tipo === 'ahorro') ahorros += t.monto;
+      });
+
+      document.getElementById('totalIngresos').textContent = formatMoney(ingresos);
+      document.getElementById('totalGastos').textContent = formatMoney(gastos);
+      document.getElementById('totalAhorro').textContent = formatMoney(ahorros);
+      document.getElementById('totalBalance').textContent = formatMoney(ingresos - gastos - ahorros);
+
+      const tbody = document.getElementById('finTabla');
+      tbody.innerHTML = '';
+      filtrados.forEach(t => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${t.fecha}</td>
+          <td>${t.desc}</td>
+          <td><span class="tag tag-${t.tipo}">${t.tipo}</span></td>
+          <td style="text-align:right;font-weight:600">${formatMoney(t.monto)}</td>
+          <td><button class="btn btn-small btn-outline" onclick="eliminarTrans(${t.id})">Eliminar</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+      if (filtrados.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--texto-claro);padding:2rem">Sin transacciones registradas</td></tr>`;
+      }
+
+      const meses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+      const porMes = {};
+      trans.forEach(t => {
+        const m = parseInt(t.fecha.split('-')[1]) - 1;
+        if (!porMes[m]) porMes[m] = 0;
+        if (t.tipo === 'gasto') porMes[m] -= t.monto;
+        else porMes[m] += t.monto;
+      });
+      const maxVal = Math.max(...Object.values(porMes).map(Math.abs), 1);
+      const chart = document.getElementById('finChart');
+      chart.innerHTML = '';
+      for (let i = 0; i < 12; i++) {
+        const val = porMes[i] || 0;
+        const h = Math.abs(val) / maxVal * 160;
+        const bar = document.createElement('div');
+        bar.className = 'fin-bar';
+        bar.style.height = Math.max(h, 4) + 'px';
+        bar.style.background = val >= 0 ? 'var(--exito)' : 'var(--alerta)';
+        bar.innerHTML = `<span class="fin-bar-val">${formatMoney(val)}</span><span class="fin-bar-label">${meses[i]}</span>`;
+        chart.appendChild(bar);
+      }
+    }
+
+    renderFinanzas();
+  </script>
+
+
+  <script>
+    const temaGuardado = localStorage.getItem('tema_planificador');
+    if (temaGuardado) {
+      const t = JSON.parse(temaGuardado);
+      const r = document.documentElement;
+      r.style.setProperty('--rosa-principal', t.principal);
+      r.style.setProperty('--rosa-oscuro', t.oscuro);
+      r.style.setProperty('--rosa-claro', t.claro);
+      r.style.setProperty('--rosa-medio', t.medio);
+      r.style.setProperty('--texto', t.texto);
+      r.style.setProperty('--texto-claro', t.textoClaro);
+      r.style.setProperty('--crema', t.crema);
+      r.style.setProperty('--borde', t.borde);
+      r.style.setProperty('--sombra', t.sombra);
+      r.style.setProperty('--acento', t.acento);
+    }
+  </script>
+</body>
+</html>
